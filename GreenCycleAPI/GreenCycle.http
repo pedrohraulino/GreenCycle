@@ -1,0 +1,6 @@
+@GreenCycle_HostAddress = http://localhost:5175
+
+GET {{GreenCycle_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

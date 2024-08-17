@@ -1,0 +1,121 @@
+#nav-bar {
+  width: 400px;
+  height: calc(100vh - 48px);
+  border-radius: 8px;
+  padding: 24px;
+  background-color: #F1F2F0;
+  float: right;
+  position: fixed;
+  z-index: 1;
+  margin: 24px;
+  bottom: 0px;
+  left: 0px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 40px;
+  box-shadow: 0px 2px 4px 4px rgba($color: #122F3B, $alpha: .15);
+
+  img {
+    width: 120px;
+  }
+}
+
+.count-coletas {
+  border-radius: 8px;
+  width: 100%;
+  background-color: #295D54;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: center;
+  color: #F1F2F0;
+
+  transition: all ease-in-out .3s;
+
+  &:hover {
+    background-color: #35796e;
+    box-shadow: 0px 2px 4px rgba($color: #295D54, $alpha: .15);
+
+  }
+
+  h3 {
+    font-size: 48px;
+    line-height: 40px;
+  }
+
+  p {
+    font-size: 16px;
+  }
+}
+
+.coletas {
+  width: 100%;
+
+  h4 {
+    margin-bottom: 16px;
+  }
+
+  .search-bar {
+    height: 32px;
+    width: 100%;
+    display: flex;
+    gap: 16px;
+
+    button {
+      padding: 8px;
+      background-color: #295D54;
+      color: #F1F2F0;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all ease-in-out .3s;
+
+      &:hover {
+        background-color: #35796e;
+      }
+    }
+
+    input {
+      padding: 8px;
+      color: #C6CDD0;
+      width: 100%;
+      border: none;
+      border-radius: 4px;
+
+      &:focus {
+        outline: 1px solid #295D54 !important;
+      }
+    }
+
+  }
+}
+
+.pontos-coletas {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  padding-right: 16px;
+  gap: 16px;
+
+  &.pontos-coletas::-webkit-scrollbar {
+    width: 8px;
+
+  }
+
+  &.pontos-coletas::-webkit-scrollbar-track {
+    background: #fff;
+    border-radius: 10px;
+  }
+
+  &.pontos-coletas::-webkit-scrollbar-thumb {
+    background: #53A551;
+    border-radius: 10px;
+  }
+
+  &.pontos-coletas::-webkit-scrollbar-thumb:hover {
+    background: #35796e;
+  }
+}
