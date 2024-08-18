@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GreenCycle")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d5954a6cfbb367eba089edfbeaedf6e40c5bb1b0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1826630e322134fa18a230bfc6759ede1258dee1")]
 [assembly: System.Reflection.AssemblyProductAttribute("GreenCycle")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GreenCycle")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

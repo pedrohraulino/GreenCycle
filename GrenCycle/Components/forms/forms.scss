@@ -6,7 +6,7 @@
   background: #F1F2F0;
   padding: 20px;
   border-radius: 8px;
-  max-width: 600px;
+  max-width: 400px;
   outline: none;
   display: flex;
   flex-direction: column;
@@ -31,7 +31,7 @@ label {
 }
 
 
-input {
+input, select {
   display: block;
   width: 100%;
   padding: .375rem .75rem;
@@ -56,7 +56,7 @@ input:focus {
 form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 .form-flex {
@@ -66,6 +66,7 @@ form {
   gap: 16px;
 
   &-end {
+    margin-top: 16px;
     display: flex;
     justify-content: flex-end;
     gap: 8px;
@@ -105,4 +106,62 @@ form {
   cursor: pointer;
   transition: all ease-in-out .3s;
 
+}
+
+.custom-alert {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px 20px;
+  border-radius: 5px;
+  color: white;
+  z-index: 1050;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  animation: fadeIn 0.5s ease;
+}
+
+.custom-alert.success {
+  background-color: #4CAF50; /* Verde para sucesso */
+}
+
+.custom-alert.danger {
+  background-color: #f44336; /* Vermelho para erro */
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.error-message{
+  color: #f44336;
+  margin-top: 8px;
+  font-size: 12px;
+}
+
+
+.alert-message {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  padding: 10px;
+  background-color: #dbffdd;
+  color: #4CAF50;
+  border: 1px solid #dbffdd;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }

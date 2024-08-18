@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { GoogleMap, useJsApiLoader, Marker, InfoWindowF } from '@react-google-maps/api';
 import axios from 'axios';
 import './map.scss';
@@ -71,35 +71,40 @@ const Map: React.FC = () => {
     return address;
   };
 
-
-
-  const fetchPontosColeta = async () => {
+  const fetchPontosColeta = useCallback(async () => {
     try {
       const response = await api.get<{ dados: LocaisReciclagemModel[] }>('/api/LocaisReciclagem/BuscarLocaisReciclagem');
       const dados = response.data.dados || response.data;
 
       if (Array.isArray(dados)) {
         setLocalizacoes(dados);
-
-        const coords = await Promise.all(
-          dados.map(async (local) => {
-            const address = formatAddress(local);
-            return await getCoordinates(address);
-          })
-        );
-
-        setCoordinates(coords.filter((coord): coord is { lat: number; lng: number } => coord !== null));
       } else {
         console.error("Os dados recebidos não são um array.");
       }
     } catch (error) {
       console.error("Erro ao buscar localizações:", error);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchPontosColeta();
-  }, []);
+  }, [fetchPontosColeta]);
+
+  useEffect(() => {
+    const updateCoordinates = async () => {
+      const coords = await Promise.all(
+        localizacoes.map(async (local) => {
+          const address = formatAddress(local);
+          return await getCoordinates(address);
+        })
+      );
+      setCoordinates(coords.filter((coord): coord is { lat: number; lng: number } => coord !== null));
+    };
+
+    if (localizacoes.length > 0) {
+      updateCoordinates();
+    }
+  }, [localizacoes]);
 
   const getMapCenter = () => {
     if (coordinates.length > 0) {

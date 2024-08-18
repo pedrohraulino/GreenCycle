@@ -5,13 +5,14 @@ import PontoColetaForm from '../forms/forms';
 import { LocaisReciclagemModel } from '../../Interfaces/LocaisReciclage';
 import api from '../../services/api';
 
-const Navbar = () => {
+const Navbar: React.FC = () => {
     const [pontosColeta, setPontosColeta] = useState<LocaisReciclagemModel[]>([]);
     const [filteredPontosColeta, setFilteredPontosColeta] = useState<LocaisReciclagemModel[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedPonto, setSelectedPonto] = useState<LocaisReciclagemModel | null>(null);
     const [isEditing, setIsEditing] = useState(false);
-    const [searchTerm, setSearchTerm] = useState(''); 
+    const [searchTerm, setSearchTerm] = useState('');
+    const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchPontosColeta = async () => {
@@ -19,7 +20,7 @@ const Navbar = () => {
                 const response = await api.get<{ dados: LocaisReciclagemModel[] }>('/api/LocaisReciclagem/BuscarLocaisReciclagem');
                 if (Array.isArray(response.data.dados)) {
                     setPontosColeta(response.data.dados);
-                    setFilteredPontosColeta(response.data.dados); 
+                    setFilteredPontosColeta(response.data.dados);
                 } else {
                     console.error("Os dados recebidos não são um array.");
                 }
@@ -50,30 +51,16 @@ const Navbar = () => {
         try {
             await api.delete(`/api/LocaisReciclagem/RemoverLocal?LocalReciclagemId=${id}`);
             setPontosColeta(pontosColeta.filter(ponto => ponto.localReciclagem_Id !== id));
+            setAlertMessage('Ponto de coleta deletado com sucesso!');
+            setTimeout(() => {
+                setAlertMessage(null);
+            }, 3000);
         } catch (error) {
             console.error("Erro ao deletar ponto de coleta:", error);
-        }
-    };
-
-    const handleFormSubmit = async (data: LocaisReciclagemModel) => {
-        if (selectedPonto) {
-            try {
-                await api.put(`/api/LocaisReciclagem/EditarLocal/`, data);
-                setPontosColeta(pontosColeta.map(ponto => ponto.localReciclagem_Id === data.localReciclagem_Id ? data : ponto));
-                setIsEditing(false);
-                setSelectedPonto(null);
-            } catch (error) {
-                console.error("Erro ao atualizar ponto de coleta:", error);
-            }
-        } else {
-            try {
-                const response = await api.post('/api/LocaisReciclagem/CriarLocalReciclagem', data);
-                setPontosColeta([...pontosColeta, response.data]);
-                setIsEditing(false);
-                setSelectedPonto(null);
-            } catch (error) {
-                console.error("Erro ao criar ponto de coleta:", error);
-            }
+            setAlertMessage('Erro ao deletar ponto de coleta.');
+            setTimeout(() => {
+                setAlertMessage(null);
+            }, 5000);
         }
     };
 
@@ -84,6 +71,20 @@ const Navbar = () => {
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value);
+    };
+    
+    const handleUpdate = async () => {
+        try {
+            const response = await api.get<{ dados: LocaisReciclagemModel[] }>('/api/LocaisReciclagem/BuscarLocaisReciclagem');
+            if (Array.isArray(response.data.dados)) {
+                setPontosColeta(response.data.dados);
+                setFilteredPontosColeta(response.data.dados);
+            } else {
+                console.error("Os dados recebidos não são um array.");
+            }
+        } catch (error) {
+            console.error("Erro ao atualizar dados dos pontos de coleta:", error);
+        }
     };
 
     if (loading) {
@@ -107,7 +108,7 @@ const Navbar = () => {
                         onChange={handleSearchChange}
                     />
                     <button className="btnCadastro" onClick={() => {
-                        setSelectedPonto(null);  
+                        setSelectedPonto(null);
                         setIsEditing(true);
                     }}>Cadastrar</button>
                 </div>
@@ -127,8 +128,14 @@ const Navbar = () => {
                     isOpen={isEditing}
                     onRequestClose={handleCloseModal}
                     initialData={selectedPonto || undefined}
-                    onSubmit={handleFormSubmit}
+                    onUpdate={handleUpdate}
+                    onSetAlertMessage={setAlertMessage}
                 />
+            )}
+            {alertMessage && (
+                <div className="alert-message">
+                    {alertMessage}
+                </div>
             )}
         </section>
     );

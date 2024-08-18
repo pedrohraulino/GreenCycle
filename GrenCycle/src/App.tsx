@@ -1,15 +1,15 @@
-import './App.css'
-import Map from '../Pages/Map.tsx'
-import Navbar from '../Components/sidebar/sidebar.tsx'
+import React from 'react';
+import Map from '../Pages/Map'; // Caminho para o componente Map
+import Navbar from '../Components/sidebar/sidebar'
 
-function App() {
-
+const App: React.FC = () => {
   return (
-    <>
-    <Navbar/>
-      <Map />
-    </>
-  )
+    <div>
+
+      <Navbar/>
+        <Map />
+    </div>
+  );
 }
 
-export default App
+export default App;
