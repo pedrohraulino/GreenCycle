@@ -63,7 +63,8 @@
     display: flex;
     gap: 16px;
 
-    button {
+    .btnCadastro {
+      line-height: 100%;
       padding: 8px;
       background-color: #295D54;
       color: #F1F2F0;

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, Marker, InfoWindowF } from '@react-google-maps/api';
 import axios from 'axios';
 import './map.scss';
 import api from '../services/api';
@@ -39,23 +39,39 @@ const getCoordinates = async (address: string): Promise<{ lat: number; lng: numb
   }
 };
 
-
 const Map: React.FC = () => {
   const [localizacoes, setLocalizacoes] = useState<LocaisReciclagemModel[]>([]);
   const [coordinates, setCoordinates] = useState<{ lat: number; lng: number }[]>([]);
+  const [selectedMarker, setSelectedMarker] = useState<number | null>(null);
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: GEOCODING_API_KEY,
   });
 
   const formatAddress = (local: LocaisReciclagemModel): string => {
-    const { logradouro, numeroEndereco, bairro, cidade, cep, complemento } = local;
-    let address = `${logradouro}, ${numeroEndereco} - ${bairro}, ${cidade}, ${cep}`;
+    const { logradouro, numeroEndereco, complemento, bairro, cidade, cep } = local;
+    let address = `${logradouro}`;
+
+    if (numeroEndereco) {
+      address += `, ${numeroEndereco}`;
+    }
+
     if (complemento) {
       address += `, ${complemento}`;
     }
+
+    if (bairro || cidade) {
+      address += ` - ${bairro || ''}${bairro && cidade ? ', ' : ''}${cidade || ''}`;
+    }
+
+    if (cep) {
+      address += `, ${cep}`;
+    }
+
     return address;
   };
+
+
 
   const fetchPontosColeta = async () => {
     try {
@@ -109,7 +125,20 @@ const Map: React.FC = () => {
           position={coord}
           title={localizacoes[index]?.identificacao || 'Ponto de Coleta'}
           icon={'../src/assets/ponto-coleta.svg'}
-        />
+          onClick={() => setSelectedMarker(index)}
+        >
+          {selectedMarker === index && (
+            <InfoWindowF
+              position={coord}
+              onCloseClick={() => setSelectedMarker(null)}
+            >
+              <div className='popup'>
+                <h2>{localizacoes[index]?.identificacao}</h2>
+                <p>{formatAddress(localizacoes[index])}</p>
+              </div>
+            </InfoWindowF>
+          )}
+        </Marker>
       ))}
     </GoogleMap>
   ) : (
