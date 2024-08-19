@@ -10,6 +10,10 @@ Este projeto é um sistema para gerenciamento de pontos de coleta de reciclávei
 - **Mapa Interativo:** Exibe os pontos de coleta em um mapa do Google Maps com marcadores e janelas de informações.
 - **Lista de Pontos de Coleta:** Mostra uma lista dos pontos de coleta cadastrados com opções de editar e deletar.
 
+## Análise de dados
+
+Ao analisar os dados dos endereços recebidos, foi notado que os campos de CEP, número, complemento e bairro não eram obrigatórios. Sendo assim, foi implementada uma validação no formulário para garantir que os campos do formulário sejam preenchidos corretamente.
+
 ## Capturas de Tela
 
 ### Formulário de Ponto de Coleta
