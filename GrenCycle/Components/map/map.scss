@@ -16,3 +16,20 @@
 .popup{
   color:#122F3B;
 }
+
+.popup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.popup span {
+  width: auto;
+  display: inline;
+  padding: 4px 8px;
+  font-size: 12px;
+  background-color: #295D54;
+  color: white;
+  white-space: nowrap;
+  border-radius: 4px;
+}
+

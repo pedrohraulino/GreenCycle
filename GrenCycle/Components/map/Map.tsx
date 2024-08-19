@@ -15,7 +15,7 @@ const defaultCenter = {
   lng: -45.891506,
 };
 
-const GEOCODING_API_KEY = 'chave-api';
+const GEOCODING_API_KEY = 'AIzaSyD3n3HDKBio6KSJdF5-_YiYKmyOm0gRvSY';
 
 const getCoordinates = async (address: string): Promise<{ lat: number; lng: number } | null> => {
   try {
@@ -88,7 +88,7 @@ const Map: React.FC = () => {
       setCoordinates([]);
     }
   }, [pontosColeta, updateCoordinates]);
-  
+
 
   const getMapCenter = () => {
     if (coordinates.length > 0) {
@@ -122,6 +122,9 @@ const Map: React.FC = () => {
               onCloseClick={() => setSelectedMarker(null)}
             >
               <div className='popup'>
+                <div>
+                  <span>{pontosColeta[index]?.capacidade} m³</span>
+                </div>
                 <h2>{pontosColeta[index]?.identificacao}</h2>
                 <p>{formatAddress(pontosColeta[index])}</p>
               </div>
