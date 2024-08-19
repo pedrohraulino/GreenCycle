@@ -40,13 +40,3 @@ Este projeto é um sistema para gerenciamento de pontos de coleta de reciclávei
    ```javascript
    const GEOCODING_API_KEY = 'SUA_CHAVE_AQUI';
    ```
-
-## Uso
-
-Para iniciar o projeto, execute:
-
-```bash
-npm start
-```
-
-Isso irá iniciar o servidor de desenvolvimento e abrir o projeto no seu navegador padrão.
