@@ -20,10 +20,12 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-
 }
+
+
 .modal-delete{
   gap:8px;  
+  left: 50%;
 }
 .overlay {
   position: fixed;

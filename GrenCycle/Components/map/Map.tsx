@@ -15,7 +15,7 @@ const defaultCenter = {
   lng: -45.891506,
 };
 
-const GEOCODING_API_KEY = '-';
+const GEOCODING_API_KEY = 'chave-api';
 
 const getCoordinates = async (address: string): Promise<{ lat: number; lng: number } | null> => {
   try {
