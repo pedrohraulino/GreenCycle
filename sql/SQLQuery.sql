@@ -152,27 +152,27 @@ GROUP BY pedido.Data, pedido.ClienteCPF, cliente.Cidade;
 SELECT
     cliente.CPF AS Cliente,
     cliente.Cidade,
-    SUM(item.Qtde) AS qtdePedidos,
+    COUNT(pedido.ID) AS QtdePedidos,
     SUM(item.Unitario * item.Qtde) AS TotalBruto,
-    SUM(item.Unitario * item.Qtde) AS totalDescontos,
-    SUM((item.Unitario - item.Desconto) * item.Qtde) AS totalLiquido
+    SUM(item.Desconto * item.Qtde) AS TotalDescontos,
+    SUM((item.Unitario - item.Desconto) * item.Qtde) AS TotalLiquido
 FROM tbPedidos1 pedido
     INNER JOIN tbClientes1 cliente ON pedido.ClienteCPF = cliente.CPF
     INNER JOIN tbPedidos1Itens1 item ON item.PedidoID = pedido.ID
     INNER JOIN tbProdutos1 produto ON item.ProdutoID = produto.ID
-WHERE pedido.Data >= '2024-08-14 23:59:59' AND pedido.Data <= '2024-08-20 23:59:59'
+WHERE pedido.Data >= '2024-08-14 00:00:00' AND pedido.Data <= '2024-08-20 23:59:59'
 GROUP BY cliente.CPF, cliente.Cidade;
 
 
 --- questão 8
 
 SELECT
-    cliente.Cidade,
-    cliente.Bairro,
-    SUM(item.Qtde) AS qtdePedidos,
+    cliente.Cidade AS Cidade,
+    cliente.Bairro AS Bairro,
+    COUNT(pedido.ID) AS QtdePedidos,
     SUM(item.Unitario * item.Qtde) AS TotalBruto,
-    SUM(item.Unitario * item.Qtde) AS totalDescontos,
-    SUM((item.Unitario - item.Desconto) * item.Qtde) AS totalLiquido
+    SUM(item.Desconto * item.Qtde) AS TotalDescontos,
+    SUM((item.Unitario - item.Desconto) * item.Qtde) AS TotalLiquido
 FROM tbPedidos1 pedido
     INNER JOIN tbClientes1 cliente ON pedido.ClienteCPF = cliente.CPF
     INNER JOIN tbPedidos1Itens1 item ON item.PedidoID = pedido.ID
