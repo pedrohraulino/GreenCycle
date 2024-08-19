@@ -26,7 +26,7 @@ CREATE TABLE tbPedidos
     FOREIGN KEY(ClienteCPF) REFERENCES tbClientes(CPF) ON DELETE SET NULL
 );
 
-CREATE TABLE tbPedidosItens1
+CREATE TABLE tbPedidosItens
 (
     PedidoID int,
     ProdutoID int,
@@ -60,7 +60,7 @@ INSERT INTO tbPedidos (Pedido, Data, ClienteCPF)
 VALUES
     ('0001', '2024-08-19 09:32:20', '0000001');
 
-INSERT INTO tbPedidosItens1 (PedidoID, ProdutoID, Qtde, Unitario, Desconto)
+INSERT INTO tbPedidosItens (PedidoID, ProdutoID, Qtde, Unitario, Desconto)
 VALUES
     (1, 1, 10, 30.00, 0),
     (1, 2, 5, 35.00, 0);
@@ -76,11 +76,11 @@ INSERT INTO tbPedidos (Pedido, Data, ClienteCPF)
 VALUES
     ('0002', '2024-08-15 10:42:20', '0000002');
 
-INSERT INTO tbPedidosItens1 (PedidoID, ProdutoID, Qtde, Unitario, Desconto)
+INSERT INTO tbPedidosItens (PedidoID, ProdutoID, Qtde, Unitario, Desconto)
 VALUES
     (2, 2, 10, 35.00, 0);
 
-INSERT INTO tbPedidosItens1 (PedidoID, ProdutoID, Qtde, Unitario, Desconto)
+INSERT INTO tbPedidosItens (PedidoID, ProdutoID, Qtde, Unitario, Desconto)
 VALUES
     (2, 3, 10, 40.00, 10);
 
@@ -102,7 +102,7 @@ SELECT
     item.Qtde * (item.Unitario - item.Desconto) AS totalItem
 FROM tbPedidos pedido
     INNER JOIN tbClientes cliente ON pedido.ClienteCPF = cliente.CPF
-    INNER JOIN tbPedidosItens1 item ON item.PedidoID = pedido.ID
+    INNER JOIN tbPedidosItens item ON item.PedidoID = pedido.ID
     INNER JOIN tbProdutos produto ON item.ProdutoID = produto.ID
 WHERE pedido.Data >= '2024-08-14 23:59:59' AND pedido.Data <= '2024-08-20 23:59:59';
 
@@ -123,7 +123,7 @@ SELECT
     SUM((item.Unitario - item.Desconto) * item.Qtde) AS totalLiquido
 FROM tbPedidos pedido
     INNER JOIN tbClientes cliente ON pedido.ClienteCPF = cliente.CPF
-    INNER JOIN tbPedidosItens1 item ON item.PedidoID = pedido.ID
+    INNER JOIN tbPedidosItens item ON item.PedidoID = pedido.ID
     INNER JOIN tbProdutos produto ON item.ProdutoID = produto.ID
 WHERE pedido.Data >= '2024-08-14 23:59:59' AND pedido.Data <= '2024-08-20 23:59:59'
 GROUP BY pedido.Data, pedido.Pedido, cliente.CPF, cliente.Nome, cliente.Bairro, cliente.Cidade;
@@ -133,18 +133,20 @@ GROUP BY pedido.Data, pedido.Pedido, cliente.CPF, cliente.Nome, cliente.Bairro, 
 
 SELECT
     pedido.Data,
-    pedido.ClienteCPF AS Cliente,
+    cliente.Nome AS Cliente,     
     cliente.Cidade,
     SUM(item.Qtde) AS qtdePedidos,
     SUM(item.Unitario * item.Qtde) AS TotalBruto,
-    SUM(item.Unitario * item.Qtde) AS totalDescontos,
+    SUM(item.Desconto * item.Qtde) AS totalDescontos,  
     SUM((item.Unitario - item.Desconto) * item.Qtde) AS totalLiquido
 FROM tbPedidos pedido
     INNER JOIN tbClientes cliente ON pedido.ClienteCPF = cliente.CPF
-    INNER JOIN tbPedidosItens1 item ON item.PedidoID = pedido.ID
+    INNER JOIN tbPedidosItens item ON item.PedidoID = pedido.ID
     INNER JOIN tbProdutos produto ON item.ProdutoID = produto.ID
-WHERE pedido.Data >= '2024-08-14 23:59:59' AND pedido.Data <= '2024-08-20 23:59:59'
-GROUP BY pedido.Data, pedido.ClienteCPF, cliente.Cidade;
+WHERE pedido.Data >= '2024-08-14 00:00:00' AND pedido.Data <= '2024-08-20 23:59:59'
+GROUP BY pedido.Data, cliente.Nome, cliente.Cidade
+ORDER BY pedido.Data;
+
 
 
 --- questão 7
@@ -158,7 +160,7 @@ SELECT
     SUM((item.Unitario - item.Desconto) * item.Qtde) AS TotalLiquido
 FROM tbPedidos pedido
     INNER JOIN tbClientes cliente ON pedido.ClienteCPF = cliente.CPF
-    INNER JOIN tbPedidosItens1 item ON item.PedidoID = pedido.ID
+    INNER JOIN tbPedidosItens item ON item.PedidoID = pedido.ID
     INNER JOIN tbProdutos produto ON item.ProdutoID = produto.ID
 WHERE pedido.Data >= '2024-08-14 00:00:00' AND pedido.Data <= '2024-08-20 23:59:59'
 GROUP BY cliente.CPF, cliente.Cidade;
@@ -175,7 +177,7 @@ SELECT
     SUM((item.Unitario - item.Desconto) * item.Qtde) AS TotalLiquido
 FROM tbPedidos pedido
     INNER JOIN tbClientes cliente ON pedido.ClienteCPF = cliente.CPF
-    INNER JOIN tbPedidosItens1 item ON item.PedidoID = pedido.ID
+    INNER JOIN tbPedidosItens item ON item.PedidoID = pedido.ID
     INNER JOIN tbProdutos produto ON item.ProdutoID = produto.ID
 GROUP BY cliente.Cidade, cliente.Bairro;
 
@@ -192,7 +194,7 @@ SELECT
     AVG(item.Unitario - item.Desconto) AS valorMedioVendas
 FROM tbPedidos pedido
     INNER JOIN tbClientes cliente ON pedido.ClienteCPF = cliente.CPF
-    INNER JOIN tbPedidosItens1 item ON item.PedidoID = pedido.ID
+    INNER JOIN tbPedidosItens item ON item.PedidoID = pedido.ID
     INNER JOIN tbProdutos produto ON item.ProdutoID = produto.ID
 GROUP BY produto.Descricao, produto.Grupo
 ORDER BY produto.Descricao ASC;
@@ -206,7 +208,7 @@ DELETE FROM tbClientes WHERE CPF = '0000001';
 --- questão 11
 
 DELETE item
-FROM tbPedidosItens1 item
+FROM tbPedidosItens item
     INNER JOIN tbProdutos produto ON item.ProdutoID = produto.ID
 WHERE produto.Codigo = '0001';
 CREATE TABLE tbProdutos
@@ -237,7 +239,7 @@ CREATE TABLE tbPedidos
     FOREIGN KEY(ClienteCPF) REFERENCES tbClientes(CPF) ON DELETE SET NULL
 );
 
-CREATE TABLE tbPedidosItens1
+CREATE TABLE tbPedidosItens
 (
     PedidoID int,
     ProdutoID int,
@@ -271,7 +273,7 @@ INSERT INTO tbPedidos (Pedido, Data, ClienteCPF)
 VALUES
     ('0001', '2024-08-19 09:32:20', '0000001');
 
-INSERT INTO tbPedidosItens1 (PedidoID, ProdutoID, Qtde, Unitario, Desconto)
+INSERT INTO tbPedidosItens (PedidoID, ProdutoID, Qtde, Unitario, Desconto)
 VALUES
     (1, 1, 10, 30.00, 0),
     (1, 2, 5, 35.00, 0);
@@ -287,11 +289,11 @@ INSERT INTO tbPedidos (Pedido, Data, ClienteCPF)
 VALUES
     ('0002', '2024-08-15 10:42:20', '0000002');
 
-INSERT INTO tbPedidosItens1 (PedidoID, ProdutoID, Qtde, Unitario, Desconto)
+INSERT INTO tbPedidosItens (PedidoID, ProdutoID, Qtde, Unitario, Desconto)
 VALUES
     (2, 2, 10, 35.00, 0);
 
-INSERT INTO tbPedidosItens1 (PedidoID, ProdutoID, Qtde, Unitario, Desconto)
+INSERT INTO tbPedidosItens (PedidoID, ProdutoID, Qtde, Unitario, Desconto)
 VALUES
     (2, 3, 10, 40.00, 10);
 
@@ -313,7 +315,7 @@ SELECT
     item.Qtde * (item.Unitario - item.Desconto) AS totalItem
 FROM tbPedidos pedido
     INNER JOIN tbClientes cliente ON pedido.ClienteCPF = cliente.CPF
-    INNER JOIN tbPedidosItens1 item ON item.PedidoID = pedido.ID
+    INNER JOIN tbPedidosItens item ON item.PedidoID = pedido.ID
     INNER JOIN tbProdutos produto ON item.ProdutoID = produto.ID
 WHERE pedido.Data >= '2024-08-14 23:59:59' AND pedido.Data <= '2024-08-20 23:59:59';
 
@@ -334,7 +336,7 @@ SELECT
     SUM(item.Unitario * item.Qtde) AS totalLiquido
 FROM tbPedidos pedido
     INNER JOIN tbClientes cliente ON pedido.ClienteCPF = cliente.CPF
-    INNER JOIN tbPedidosItens1 item ON item.PedidoID = pedido.ID
+    INNER JOIN tbPedidosItens item ON item.PedidoID = pedido.ID
     INNER JOIN tbProdutos produto ON item.ProdutoID = produto.ID
 WHERE pedido.Data >= '2024-08-14 23:59:59' AND pedido.Data <= '2024-08-20 23:59:59'
 GROUP BY pedido.Data, pedido.Pedido, cliente.CPF, cliente.Nome, cliente.Bairro, cliente.Cidade;
@@ -352,7 +354,7 @@ SELECT
     SUM(item.Unitario * item.Qtde) AS totalLiquido
 FROM tbPedidos pedido
     INNER JOIN tbClientes cliente ON pedido.ClienteCPF = cliente.CPF
-    INNER JOIN tbPedidosItens1 item ON item.PedidoID = pedido.ID
+    INNER JOIN tbPedidosItens item ON item.PedidoID = pedido.ID
     INNER JOIN tbProdutos produto ON item.ProdutoID = produto.ID
 WHERE pedido.Data >= '2024-08-14 23:59:59' AND pedido.Data <= '2024-08-20 23:59:59'
 GROUP BY pedido.Data, pedido.ClienteCPF, cliente.Cidade;
@@ -369,7 +371,7 @@ SELECT
     SUM(item.Unitario  * item.Qtde) AS totalLiquido
 FROM tbPedidos pedido
     INNER JOIN tbClientes cliente ON pedido.ClienteCPF = cliente.CPF
-    INNER JOIN tbPedidosItens1 item ON item.PedidoID = pedido.ID
+    INNER JOIN tbPedidosItens item ON item.PedidoID = pedido.ID
     INNER JOIN tbProdutos produto ON item.ProdutoID = produto.ID
 WHERE pedido.Data >= '2024-08-14 23:59:59' AND pedido.Data <= '2024-08-20 23:59:59'
 GROUP BY cliente.CPF, cliente.Cidade;
@@ -386,7 +388,7 @@ SELECT
     SUM((item.Unitario * (1 - CAST(item.Desconto / 100 AS numeric))) * item.Qtde) AS totalLiquido
 FROM tbPedidos pedido
     INNER JOIN tbClientes cliente ON pedido.ClienteCPF = cliente.CPF
-    INNER JOIN tbPedidosItens1 item ON item.PedidoID = pedido.ID
+    INNER JOIN tbPedidosItens item ON item.PedidoID = pedido.ID
     INNER JOIN tbProdutos produto ON item.ProdutoID = produto.ID
 GROUP BY cliente.Cidade, cliente.Bairro;
 
@@ -403,7 +405,7 @@ SELECT
     SUM(item.Unitario * item.Qtde) / SUM(item.Qtde) AS valorMedioVendas
 FROM tbPedidos pedido
     INNER JOIN tbClientes cliente ON pedido.ClienteCPF = cliente.CPF
-    INNER JOIN tbPedidosItens1 item ON item.PedidoID = pedido.ID
+    INNER JOIN tbPedidosItens item ON item.PedidoID = pedido.ID
     INNER JOIN tbProdutos produto ON item.ProdutoID = produto.ID
 GROUP BY produto.Descricao, produto.Grupo
 ORDER BY produto.Descricao ASC;
@@ -417,6 +419,6 @@ DELETE FROM tbClientes WHERE CPF = '0000001';
 --- questão 11
 
 DELETE item
-FROM tbPedidosItens1 item
+FROM tbPedidosItens item
     INNER JOIN tbProdutos produto ON item.ProdutoID = produto.ID
 WHERE produto.Codigo = '0001';
