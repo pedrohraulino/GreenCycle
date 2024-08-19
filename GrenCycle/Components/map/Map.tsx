@@ -15,7 +15,7 @@ const defaultCenter = {
   lng: -45.891506,
 };
 
-const GEOCODING_API_KEY = 'AIzaSyD3n3HDKBio6KSJdF5-_YiYKmyOm0gRvSY';
+const GEOCODING_API_KEY = '-';
 
 const getCoordinates = async (address: string): Promise<{ lat: number; lng: number } | null> => {
   try {
