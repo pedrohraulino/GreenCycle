@@ -2,8 +2,8 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { GoogleMap, useJsApiLoader, Marker, InfoWindowF } from '@react-google-maps/api';
 import axios from 'axios';
 import './map.scss';
-import api from '../services/api';
-import { LocaisReciclagemModel } from '../Interfaces/LocaisReciclage';
+import { LocaisReciclagemModel } from '../../Interfaces/LocaisReciclage';
+import { useMapContext } from '../contexto'; // Importando o contexto
 
 const containerStyle = {
   width: '100%',
@@ -40,7 +40,7 @@ const getCoordinates = async (address: string): Promise<{ lat: number; lng: numb
 };
 
 const Map: React.FC = () => {
-  const [localizacoes, setLocalizacoes] = useState<LocaisReciclagemModel[]>([]);
+  const { pontosColeta } = useMapContext(); // Usando o contexto de mapa
   const [coordinates, setCoordinates] = useState<{ lat: number; lng: number }[]>([]);
   const [selectedMarker, setSelectedMarker] = useState<number | null>(null);
   const { isLoaded } = useJsApiLoader({
@@ -71,40 +71,24 @@ const Map: React.FC = () => {
     return address;
   };
 
-  const fetchPontosColeta = useCallback(async () => {
-    try {
-      const response = await api.get<{ dados: LocaisReciclagemModel[] }>('/api/LocaisReciclagem/BuscarLocaisReciclagem');
-      const dados = response.data.dados || response.data;
-
-      if (Array.isArray(dados)) {
-        setLocalizacoes(dados);
-      } else {
-        console.error("Os dados recebidos não são um array.");
-      }
-    } catch (error) {
-      console.error("Erro ao buscar localizações:", error);
-    }
-  }, []);
+  const updateCoordinates = useCallback(async () => {
+    const coords = await Promise.all(
+      pontosColeta.map(async (local) => {
+        const address = formatAddress(local);
+        return await getCoordinates(address);
+      })
+    );
+    setCoordinates(coords.filter((coord): coord is { lat: number; lng: number } => coord !== null));
+  }, [pontosColeta]);
 
   useEffect(() => {
-    fetchPontosColeta();
-  }, [fetchPontosColeta]);
-
-  useEffect(() => {
-    const updateCoordinates = async () => {
-      const coords = await Promise.all(
-        localizacoes.map(async (local) => {
-          const address = formatAddress(local);
-          return await getCoordinates(address);
-        })
-      );
-      setCoordinates(coords.filter((coord): coord is { lat: number; lng: number } => coord !== null));
-    };
-
-    if (localizacoes.length > 0) {
+    if (pontosColeta.length > 0) {
       updateCoordinates();
+    } else {
+      setCoordinates([]);
     }
-  }, [localizacoes]);
+  }, [pontosColeta, updateCoordinates]);
+  
 
   const getMapCenter = () => {
     if (coordinates.length > 0) {
@@ -128,7 +112,7 @@ const Map: React.FC = () => {
         <Marker
           key={index}
           position={coord}
-          title={localizacoes[index]?.identificacao || 'Ponto de Coleta'}
+          title={pontosColeta[index]?.identificacao || 'Ponto de Coleta'}
           icon={'../src/assets/ponto-coleta.svg'}
           onClick={() => setSelectedMarker(index)}
         >
@@ -138,8 +122,8 @@ const Map: React.FC = () => {
               onCloseClick={() => setSelectedMarker(null)}
             >
               <div className='popup'>
-                <h2>{localizacoes[index]?.identificacao}</h2>
-                <p>{formatAddress(localizacoes[index])}</p>
+                <h2>{pontosColeta[index]?.identificacao}</h2>
+                <p>{formatAddress(pontosColeta[index])}</p>
               </div>
             </InfoWindowF>
           )}
@@ -147,7 +131,7 @@ const Map: React.FC = () => {
       ))}
     </GoogleMap>
   ) : (
-    <div>Loading...</div>
+    <div>Carregando...</div>
   );
 };
 

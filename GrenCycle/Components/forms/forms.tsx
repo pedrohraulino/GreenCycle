@@ -10,7 +10,7 @@ interface FormsProps {
   onRequestClose: () => void;
   initialData?: LocaisReciclagemModel;
   onUpdate: () => void;
-  onSetAlertMessage: (message: string | null) => void; // Função para definir a mensagem de alerta
+  onSetAlertMessage: (message: string | null) => void;
 }
 
 const estadosBrasileiros = [
@@ -63,8 +63,8 @@ const Forms: React.FC<FormsProps> = ({ isOpen, onRequestClose, initialData, onUp
   }, [initialData]);
 
   const validateCep = (value: string): boolean => {
-    const cepRegex = /^\d{5}-\d{3}$/;
-    return value === '' || cepRegex.test(value);
+    const cep = /^\d{5}-\d{3}$/;
+    return value === '' || cep.test(value);
   };
 
   const formatCapacidade = (value: number): string => {
@@ -108,12 +108,18 @@ const Forms: React.FC<FormsProps> = ({ isOpen, onRequestClose, initialData, onUp
       if (initialData) {
         await api.put('/api/LocaisReciclagem/EditarLocal', formData);
         onSetAlertMessage('Ponto de coleta editado com sucesso!');
+        setTimeout(() => {
+          onSetAlertMessage(null);
+        }, 3000);
       } else {
         await api.post('/api/LocaisReciclagem/CriarLocal', formData);
         onSetAlertMessage('Ponto de coleta criado com sucesso!');
+        setTimeout(() => {
+          onSetAlertMessage(null);
+        }, 3000);
       }
       onUpdate();
-      onRequestClose(); // Fecha o modal após o sucesso
+      onRequestClose();
     } catch (error) {
       console.error('Erro ao salvar o local:', error);
       onSetAlertMessage('Ocorreu um erro ao salvar o local.');
